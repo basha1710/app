@@ -1,0 +1,28 @@
+'''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basha AI</title>
+</head>
+<body>
+    <h1>Basha AI</h1>
+    <textarea id="prompt" placeholder="Enter your prompt..."></textarea>
+    <button onclick="generateText()">Generate</button>
+    <div id="response"></div>
+
+    <script>
+        async function generateText() {
+            const prompt = document.getElementById("prompt").value;
+            const response = await fetch('http://localhost:5000/generate-text', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            const data = await response.json();
+            document.getElementById("response").innerText = data.choices[0].text;
+        }
+    </script>
+</body>
+</html>'''
+
