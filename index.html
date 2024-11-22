@@ -1,28 +1,97 @@
-'''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basha AI</title>
+    <title>Flask AI App</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        input, button { margin: 10px; }
+        textarea { width: 300px; height: 100px; }
+    </style>
 </head>
 <body>
-    <h1>Basha AI</h1>
-    <textarea id="prompt" placeholder="Enter your prompt..."></textarea>
-    <button onclick="generateText()">Generate</button>
-    <div id="response"></div>
+    <h1>Welcome to Flask AI App</h1>
+
+    <!-- Text Generation Form -->
+    <h2>Generate Text</h2>
+    <form id="textForm">
+        <textarea id="textPrompt" placeholder="Enter your prompt"></textarea><br>
+        <button type="submit">Generate Text</button>
+    </form>
+    <p id="textResult"></p>
+
+    <!-- Image Generation Form -->
+    <h2>Generate Image</h2>
+    <form id="imageForm">
+        <textarea id="imagePrompt" placeholder="Enter prompt for image generation"></textarea><br>
+        <button type="submit">Generate Image</button>
+    </form>
+    <img id="imageResult" style="max-width: 500px; display: none;"/>
+
+    <!-- Audio Transcription Form -->
+    <h2>Transcribe Audio</h2>
+    <form id="audioForm" enctype="multipart/form-data">
+        <input type="file" id="audioFile" accept="audio/*"><br>
+        <button type="submit">Transcribe Audio</button>
+    </form>
+    <p id="audioResult"></p>
+
+    <!-- Placeholder for Music and Video Generation -->
+    <h2>Music & Video Generation</h2>
+    <p id="musicMessage">Music generation is under development.</p>
+    <p id="videoMessage">Video generation is under development.</p>
 
     <script>
-        async function generateText() {
-            const prompt = document.getElementById("prompt").value;
-            const response = await fetch('http://localhost:5000/generate-text', {
+        // Handle text generation
+        document.getElementById("textForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let prompt = document.getElementById("textPrompt").value;
+            fetch('/generate-text', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: prompt })
+            })
+            .then(response => response.json())
+            .then(data => document.getElementById("textResult").innerText = data.generated_text || data.error);
+        });
+
+        // Handle image generation
+        document.getElementById("imageForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let prompt = document.getElementById("imagePrompt").value;
+            fetch('/generate-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: prompt })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.image_url) {
+                    document.getElementById("imageResult").src = data.image_url;
+                    document.getElementById("imageResult").style.display = 'block';
+                } else {
+                    document.getElementById("imageResult").style.display = 'none';
+                }
             });
-            const data = await response.json();
-            document.getElementById("response").innerText = data.choices[0].text;
-        }
+        });
+
+        // Handle audio transcription
+        document.getElementById("audioForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let formData = new FormData();
+            formData.append("file", document.getElementById("audioFile").files[0]);
+            fetch('/transcribe-audio', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => document.getElementById("audioResult").innerText = data.transcription || data.error);
+        });
     </script>
 </body>
-</html>'''
-
+</html>
