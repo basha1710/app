@@ -9,7 +9,7 @@ import speech_recognition as sr  # For speech-to-text
 app = Flask(__name__)
 
 # Configure OpenAI API (replace 'your-api-key' with an actual key)
-openai.api_key = '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'
+openai.api_key = ''
 
 @app.route('/generate-text', methods=['POST'])
 def generate_text():
